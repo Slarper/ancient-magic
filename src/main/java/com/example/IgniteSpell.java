@@ -14,6 +14,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -30,6 +31,10 @@ public class IgniteSpell {
             World world = caster.getWorld();
 
             for (var hitResult : hitResults){
+                if (hitResult.getType() == HitResult.Type.MISS) {
+                    break;
+                }
+
                 if (hitResult instanceof EntityHitResult
                 ){
                     var entity = ((EntityHitResult)hitResult).getEntity();
