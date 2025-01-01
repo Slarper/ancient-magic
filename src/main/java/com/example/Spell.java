@@ -1,5 +1,8 @@
 package com.example;
 
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -8,6 +11,7 @@ import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -24,6 +28,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+
+import java.util.ArrayList;
 
 import static com.example.ExampleMod.MOD_ID;
 import static com.example.ExampleMod.SPELL;
@@ -61,6 +67,21 @@ public class Spell extends Item {
                 @Override
                 protected void onBlockHit(BlockHitResult blockHitResult) {
                     user.sendMessage(Text.of("You hit a block!"), false);
+
+                    BlockPos blockPos = blockHitResult.getBlockPos();
+                    ArrayList<BlockPos> blockPosArrayList = new ArrayList<>();
+                    blockPosArrayList.add(blockPos);
+                    ArrayList<Entity> entities = new ArrayList<>();
+                    ItemStack itemStack = user.getStackInHand(hand);
+
+                    NbtComponent nbtComponent = itemStack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+                    NbtCompound nbt = nbtComponent.copyNbt();
+
+                    SpellCallback.EVENT.invoker().interact(nbt,
+                            user,
+                            entities,
+                            blockPosArrayList);
+
                     super.onBlockHit(blockHitResult);
                 }
 
@@ -69,7 +90,11 @@ public class Spell extends Item {
                     user.sendMessage(Text.of("You hit an Entity!"), false);
                     super.onEntityHit(entityHitResult);
                 }
+
+
             };
+
+            arrow.setVelocity(user.getRotationVector().multiply(2.0d));
 
 
             // Spawn the arrow in the world

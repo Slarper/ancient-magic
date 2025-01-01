@@ -32,6 +32,7 @@ public class ExampleMod implements ModInitializer {
 			.build();
 
 	public static final Item SPELL = Spell.register();
+	public static final Item AIR2 = Air2.register();
 
 	@Override
 	public void onInitialize() {
@@ -49,8 +50,11 @@ public class ExampleMod implements ModInitializer {
 // Register items to the custom item group.
 		ItemGroupEvents.modifyEntriesEvent(CUSTOM_ITEM_GROUP_KEY).register(itemGroup -> {
 			itemGroup.add(SPELL);
+			itemGroup.add(AIR2);
 			// ...
 		});
+
+		IgniteSpell.register();
 
 
 	}

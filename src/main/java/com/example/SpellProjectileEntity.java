@@ -2,11 +2,9 @@ package com.example;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
@@ -16,7 +14,7 @@ import static com.example.ExampleMod.SPELL;
 
 public class SpellProjectileEntity extends ThrownItemEntity {
 
-    public int age = 3*20;
+    public int age2 = 3*20;
 
     public static final double SPEED = 2d;
 
@@ -26,8 +24,13 @@ public class SpellProjectileEntity extends ThrownItemEntity {
         this.setVelocity(speed);
         // Set arrow properties for invisibility and no damage
         this.setNoGravity(true);  // Optional: Make arrow behave like it has no gravity
-        this.setInvisible(true);  // Make the arrow invisible
+
         this.setSilent(true);
+
+
+    }
+    public SpellProjectileEntity(EntityType<? extends ThrownItemEntity> type, double x, double y, double z, World world, ItemStack stack) {
+        super(type, x, y, z, world, stack);
 
     }
 
@@ -53,9 +56,11 @@ public class SpellProjectileEntity extends ThrownItemEntity {
     @Override
     public void tick() {
         super.tick();
-        this.age--;
-        if (this.age <= 0){
+        this.age2--;
+        if (this.age2 <= 0){
             this.discard();
         }
     }
+
+
 }
