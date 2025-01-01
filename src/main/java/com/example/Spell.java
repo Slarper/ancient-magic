@@ -68,19 +68,22 @@ public class Spell extends Item {
                 protected void onBlockHit(BlockHitResult blockHitResult) {
                     user.sendMessage(Text.of("You hit a block!"), false);
 
-                    BlockPos blockPos = blockHitResult.getBlockPos();
-                    ArrayList<BlockPos> blockPosArrayList = new ArrayList<>();
-                    blockPosArrayList.add(blockPos);
-                    ArrayList<Entity> entities = new ArrayList<>();
-                    ItemStack itemStack = user.getStackInHand(hand);
+                    ArrayList<HitResult> hitResults = new ArrayList<>();
+                    hitResults.add(blockHitResult);
 
+//                    BlockPos blockPos = blockHitResult.getBlockPos();
+//                    ArrayList<BlockPos> blockPosArrayList = new ArrayList<>();
+//                    blockPosArrayList.add(blockPos);
+//                    ArrayList<Entity> entities = new ArrayList<>();
+
+                    ItemStack itemStack = user.getStackInHand(hand);
                     NbtComponent nbtComponent = itemStack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
                     NbtCompound nbt = nbtComponent.copyNbt();
 
-                    SpellCallback.EVENT.invoker().interact(nbt,
+                    SpellCallback.EVENT.invoker().interact(
+                            nbt,
                             user,
-                            entities,
-                            blockPosArrayList);
+                            hitResults);
 
                     super.onBlockHit(blockHitResult);
                 }
@@ -88,6 +91,21 @@ public class Spell extends Item {
                 @Override
                 protected void onEntityHit(EntityHitResult entityHitResult) {
                     user.sendMessage(Text.of("You hit an Entity!"), false);
+
+
+                    ArrayList<HitResult> hitResults = new ArrayList<>();
+                    hitResults.add(entityHitResult);
+
+                    ItemStack itemStack = user.getStackInHand(hand);
+                    NbtComponent nbtComponent = itemStack.getOrDefault(DataComponentTypes.CUSTOM_DATA, NbtComponent.DEFAULT);
+                    NbtCompound nbt = nbtComponent.copyNbt();
+
+                    SpellCallback.EVENT.invoker().interact(
+                            nbt,
+                            user,
+                            hitResults);
+
+
                     super.onEntityHit(entityHitResult);
                 }
 

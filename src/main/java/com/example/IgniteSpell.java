@@ -12,6 +12,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -19,47 +21,53 @@ import net.minecraft.world.event.GameEvent;
 
 public class IgniteSpell {
     public static void register() {
-        SpellCallback.EVENT.register(((nbt, caster, targets, blocks) -> {
+        SpellCallback.EVENT.register(((nbt, caster, hitResults) -> {
             NbtElement n1 = nbt.get("Ignite");
-            if (n1 != null) {
-                caster.sendMessage(Text.of("You ignite!"), false);
-
-            }
-
-            for (var target : targets) {
-                if (target != null) {
-                    if (target instanceof LivingEntity) {
-                        if (!target.isInLava() && !target.isOnFire()) {
-                            caster.sendMessage(Text.of("You ignite an Entity!"), false);
-                            target.setOnFireFor(10);
-                        }
-                    }
-
-                }
+            if (n1 == null) {
+                return ActionResult.PASS;
             }
 
             World world = caster.getWorld();
 
-
-            for (var block : blocks) {
-                if (block != null) {
-                    BlockState blockState = world.getBlockState(block);
-                    if (!CampfireBlock.canBeLit(blockState) && !CandleBlock.canBeLit(blockState) && !CandleCakeBlock.canBeLit(blockState)) {
-                        BlockPos blockPos2 = block.offset(Direction.UP);
-                        if (AbstractFireBlock.canPlaceAt(world, blockPos2, Direction.UP)) {
-                            world.playSound(caster, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
-                            BlockState blockState2 = AbstractFireBlock.getState(world, blockPos2);
-                            world.setBlockState(blockPos2, blockState2, Block.NOTIFY_ALL_AND_REDRAW);
-                            world.emitGameEvent(caster, GameEvent.BLOCK_PLACE, block);
-
+            for (var hitResult : hitResults){
+                if (hitResult instanceof EntityHitResult
+                ){
+                    var entity = ((EntityHitResult)hitResult).getEntity();
+                    if (
+                            entity instanceof LivingEntity livingEntity
+                    ) {
+                        if (
+                                !livingEntity.isInLava()
+                                && !livingEntity.isOnFire()
+                        ) {
+                            livingEntity.setOnFireFor(10);
                         }
-                    }else {
-                        world.playSound(caster, block, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
-                        world.setBlockState(block, blockState.with(Properties.LIT, Boolean.valueOf(true)), Block.NOTIFY_ALL_AND_REDRAW);
-                        world.emitGameEvent(caster, GameEvent.BLOCK_CHANGE, block);
+                    }
+                } else if (hitResult instanceof BlockHitResult blockHitResult) {
+                    var blockPos = blockHitResult.getBlockPos();
+                    var direction = blockHitResult.getSide();
+
+                    if (blockPos != null) {
+                        BlockState blockState = world.getBlockState(blockPos);
+                        if (!CampfireBlock.canBeLit(blockState) && !CandleBlock.canBeLit(blockState) && !CandleCakeBlock.canBeLit(blockState)) {
+                            BlockPos blockPos2 = blockPos.offset(blockHitResult.getSide());
+                            if (AbstractFireBlock.canPlaceAt(world, blockPos2, blockHitResult.getSide())) {
+                                world.playSound(caster, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
+                                BlockState blockState2 = AbstractFireBlock.getState(world, blockPos2);
+                                world.setBlockState(blockPos2, blockState2, Block.NOTIFY_ALL_AND_REDRAW);
+                                world.emitGameEvent(caster, GameEvent.BLOCK_PLACE, blockPos);
+
+                            }
+                        }else {
+                            world.playSound(caster, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
+                            world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.TRUE), Block.NOTIFY_ALL_AND_REDRAW);
+                            world.emitGameEvent(caster, GameEvent.BLOCK_CHANGE, blockPos);
+                        }
                     }
                 }
             }
+
+
 
 
 

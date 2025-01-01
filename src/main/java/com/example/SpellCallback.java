@@ -8,15 +8,16 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 
 public interface SpellCallback {
     Event<SpellCallback> EVENT = EventFactory.createArrayBacked(SpellCallback.class,
-            (listeners) -> (nbt, caster, targets, blocks) -> {
+            (listeners) -> (nbt, caster, hitResults) -> {
                 for (SpellCallback listener : listeners) {
-                    ActionResult result = listener.interact(nbt, caster, targets, blocks);
+                    ActionResult result = listener.interact(nbt, caster, hitResults);
 
                     if (result != ActionResult.PASS) {
                         return result;
@@ -26,5 +27,5 @@ public interface SpellCallback {
                 return ActionResult.PASS;
             });
 
-    ActionResult interact(NbtCompound nbt, PlayerEntity caster, ArrayList<Entity> targets, ArrayList<BlockPos> blocks);
+    ActionResult interact(NbtCompound nbt, PlayerEntity caster, ArrayList<HitResult> hitResults);
 }
