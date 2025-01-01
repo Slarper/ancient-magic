@@ -10,14 +10,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 
 public interface SpellCallback {
     Event<SpellCallback> EVENT = EventFactory.createArrayBacked(SpellCallback.class,
-            (listeners) -> (nbt, caster, hitResults) -> {
+            (listeners) -> (nbt, caster, hitResults, world) -> {
                 for (SpellCallback listener : listeners) {
-                    ActionResult result = listener.interact(nbt, caster, hitResults);
+                    ActionResult result = listener.interact(nbt, caster, hitResults, world);
 
                     if (result != ActionResult.PASS) {
                         return result;
@@ -27,5 +28,5 @@ public interface SpellCallback {
                 return ActionResult.PASS;
             });
 
-    ActionResult interact(NbtCompound nbt, PlayerEntity caster, ArrayList<HitResult> hitResults);
+    ActionResult interact(NbtCompound nbt, PlayerEntity caster, ArrayList<HitResult> hitResults, World world);
 }

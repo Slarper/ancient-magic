@@ -83,7 +83,8 @@ public class Spell extends Item {
                     SpellCallback.EVENT.invoker().interact(
                             nbt,
                             user,
-                            hitResults);
+                            hitResults,
+                            world);
 
                     super.onBlockHit(blockHitResult);
                 }
@@ -103,7 +104,8 @@ public class Spell extends Item {
                     SpellCallback.EVENT.invoker().interact(
                             nbt,
                             user,
-                            hitResults);
+                            hitResults,
+                            world);
 
 
                     super.onEntityHit(entityHitResult);

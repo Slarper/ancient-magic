@@ -55,6 +55,7 @@ public class ExampleMod implements ModInitializer {
 		});
 
 		IgniteSpell.register();
+		EmptySpell.register();
 
 
 	}
